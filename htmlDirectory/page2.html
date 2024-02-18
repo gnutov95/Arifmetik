@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница 2</title>
+</head>
+
+<body>
+<h1>Страница 2</h1>
+<form id="dataForm"  method="POST" onsubmit="return submitForm()">
+    <label for="input1">Время операции(сек) "+":</label>
+    <input type="text" id="input1" value="10" name="input1"><br><br>
+
+    <label for="input2">Время операции(сек) "-":</label>
+    <input type="text" id="input2" value="10" name="input2"><br><br>
+
+    <label for="input3">Время операции(сек) "*":</label>
+    <input type="text" id="input3" value="10" name="input3"><br><br>
+
+    <label for="input4">Время операции(сек) "/":</label>
+    <input type="text" id="input4" value="10" name="input4"><br><br>
+
+    <label for="input5">Время работы сервера(сек):</label>
+    <input type="text" id="input5" value="1000" name="input5"><br><br>
+    <div class="c">
+            <button type="submit" id="Apply" style="background-color: lawngreen">Apply</button>
+    </div>
+    <script>
+        function submitForm() {
+            // Получение значения input
+            var inputData = document.getElementById("inputData").value;
+
+            // Проверка на пустое значение
+            if (inputData === "") {
+                alert("Пожалуйста, введите выражение!");
+                return false; // Остановка отправки формы
+            }
+
+            // Блокируем кнопку отправки формы
+            document.getElementById("submitButton").disabled = true;
+
+            // Ваша логика отправки данных
+            console.log("Отправка данных...");
+
+            return true; // Возвращаем true, чтобы форма продолжила отправку
+        }
+
+        function switchForm() {
+            // Блокируем кнопку переключения формы
+            document.getElementById("switchButton").disabled = true;
+
+            // Ваша логика переключения страницы
+            console.log("Переключение страницы...");
+
+            return true; // Возвращаем true, чтобы форма продолжила отправку
+        }
+    </script>
+</form>
+<div class="a">
+    <form action="/" method="post">
+        <button >Назад</button>
+    </form>
+</div>
+
+<div class="a">
+    <form action="switch2" method="post">
+        <button >Далее</button>
+    </form>
+</div>
+
+<style>
+    .c{
+        margin-bottom: 10px;
+    }
+    .a{
+        width: 65px;
+        float: left;
+
+    }
+</style>
+</body>
+
+</html>
