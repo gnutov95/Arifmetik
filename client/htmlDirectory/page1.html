@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .b {
+            width: 120px; /* Увеличиваем ширину .b */
+            float: left;
+            margin-top: 20px; /* Увеличиваем верхний отступ */
+            margin-right: 20px; /* Добавляем правый отступ */
+        }
+
+        .list {
+            clear: both; /* Очищаем обтекание */
+        }
+
+        .table-wrapper {
+            margin-top: 20px;
+            overflow: hidden; /* Добавляем скрытие содержимого за пределами .table-wrapper */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: calc(50% - 10px); /* Уменьшаем ширину таблиц для соблюдения пропорций */
+            margin-right: 50px; /* Отступ между таблицами */
+            float: left; /* Добавляем float для выравнивания таблиц по горизонтали */
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        .as{
+            font-size: 24pt;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<h1>Страница 1</h1>
+<form id="dataForm" action="/submit" method="POST" onsubmit="return submitForm()">
+    <input type="text" name="inputData" id="inputData">
+    <input type="submit" value="Отправить" id="submitButton">
+</form>
+
+<div class="b">
+    <form action="/switch" method="get">
+        <button>Далее</button><br><br>
+    </form>
+</div>
+
+<div class="list">
+    <div class="table-wrapper">
+        <table>
+            <caption class = "as" >Таблица введённых данных</caption>
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>Операция</th>
+                <th>Результат</th>
+            </tr>
+            </thead>
+            <tbody id="table-body2">
+            {{range .Data}}
+            <tr>
+                <td>{{.Id}}</td>
+                <td>{{.Input}}</td>
+                {{if eq .Result 0}}
+                <td>In progress</td>
+                {{else}}
+                <td>Completed</td>
+                {{end}}
+            </tr>
+            {{end}}
+            </tbody>
+        </table>
+        <table>
+            <caption class = "as">Таблица результатов</caption>
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>Операция</th>
+                <th>Результат</th>
+            </tr>
+            </thead>
+            <tbody id="table-body">
+            {{range .Data}}
+            <tr>
+                <td>{{.Id}}</td>
+                <td>{{.Input}}</td>
+                <td>{{.Result}}</td>
+            </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function updateData() {
+        // Выполняем AJAX-запрос на сервер
+        fetch('/update') // Фунция, которая обновляет данные в таблице результатов
+            .then(response => response.json()) // Преобразуем полученные данные в формат JSON
+            .then(data => {
+                // Получаем таблицу
+                const tableBody = document.getElementById('table-body');
+
+                // Очищаем содержимое таблицы перед обновлением
+                tableBody.innerHTML = '';
+
+                // Перебираем данные и добавляем их в таблицу
+
+                data.Keys.forEach(key => {
+                    const rowData = data.Data[key];
+                    const resultCell = rowData.Result === 2020202020202020 ? 'ErrorTimeServer' : rowData.Result;
+                    const row = `
+        <tr>
+            <td>${rowData.Id}</td>
+            <td>${rowData.Input}</td>
+            <td>${resultCell}</td>
+        </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Ошибка при получении данных:', error));
+
+
+
+    }
+
+    function updateData2() {
+        // Выполняем AJAX-запрос на сервер
+        fetch('/update') // Функция, которая обновляет данные в таблице результатов
+            .then(response => response.json()) // Преобразуем полученные данные в формат JSON
+            .then(data => {
+                // Получаем таблицу
+                const tableBody = document.getElementById('table-body2');
+
+                // Перебираем данные и добавляем их в таблицу
+                tableBody.innerHTML = '';
+                data.Keys.forEach(key => {
+                    const rowData = data.Data[key];
+                    // Условие: если Result равен 0, ставим '?'; иначе 'Completed'
+                    const resultValue = rowData.Result === 0 ? 'In progress' : (rowData.Result === 2020202020202020 ? 'ErrorTimeServer' : 'Completed');
+
+                    const row = `
+                    <tr>
+                        <td>${rowData.Id}</td>
+                        <td>${rowData.Input}</td>
+                        <td>${resultValue}</td>
+                    </tr>`;
+                    // Добавляем новую строку к текущему содержимому таблицы
+                    tableBody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Ошибка при получении данных:', error));
+    }
+
+
+
+    // Обновляем данные каждые 3 секунд
+    setInterval(updateData2, 3000);
+    setInterval(updateData, 3000);
+
+
+    function submitForm() {
+        // Получение значения input
+        var inputData = document.getElementById("inputData").value;
+
+        // Проверка на пустое значение
+        if (inputData === "") {
+            alert("Пожалуйста, введите выражение!");
+            return false; // Остановка отправки формы
+        }
+        if (hasNumbers(inputData) === false) {
+            alert("400. Выражение невалидно");
+            return false; // Остановка отправки формы
+        }
+        if (hasSymbols(inputData) === false) {
+            alert("400. Выражение невалидно");
+            return false; // Остановка отправки формы
+        }
+
+        // Блокируем кнопку отправки формы
+        document.getElementById("submitButton").disabled = true;
+
+        // Ваша логика отправки данных
+        console.log("Отправка данных...");
+
+        return true; // Возвращаем true, чтобы форма продолжила отправку
+    }
+
+
+
+
+
+    function hasNumbers(inputString) {
+        return /\d/.test(inputString);
+    }
+
+    function hasSymbols(inputString) {
+        return /[+\-*/]/.test(inputString);
+    }
+</script>
+</body>
+
+</html>
